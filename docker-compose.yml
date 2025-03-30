@@ -7,8 +7,25 @@ services:
       args:
         - DEV=true
     ports:
-      - "8080:8080"
+      - "8000:8000"
     volumes:
       - ./app:/app
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=db
+    env_file:
+      - ./env/.db.env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+    env_file:
+      - ./env/.db.env
+
+# Handle automatically by docker
+volumes:
+  dev-db-data:

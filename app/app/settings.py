@@ -28,7 +28,8 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 # load_dotenv(dotenv_path)
 dotenv_secret_key_path = os.path.join(base_dir, 'env', '.secret_key.env')
 dotevn_db_path = os.path.join(base_dir, 'env', '.db.env')
-load_dotenv([dotenv_secret_key_path, dotevn_db_path])
+load_dotenv(dotenv_secret_key_path)
+load_dotenv(dotevn_db_path)
 
 # Get the secret key from environment variables
 SECRET_KEY = os.getenv('SECRET_DOCKER_SETTINGS_KEY')

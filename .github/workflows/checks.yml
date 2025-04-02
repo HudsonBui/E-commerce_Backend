@@ -17,6 +17,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Test
         env:
+          SECRET_DOCKER_SETTINGS_KEY: ${{ secrets.SECRET_DOCKER_SETTINGS_KEY }}
           DB_HOST: db
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}

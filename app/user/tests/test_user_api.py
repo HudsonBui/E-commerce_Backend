@@ -11,6 +11,7 @@ from rest_framework.test import APIClient
 
 CREATE_USER_URL = reverse("user:sign-up")
 LOGIN_URL = reverse("user:login")
+USER_URL = reverse("user:me")
 
 
 def create_user(**params):
@@ -119,3 +120,62 @@ class PublicUserApiTests(TestCase):
         res = self.client.post(LOGIN_URL, payload)
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_retrieve_user_unauthorized(self):
+        """Test authentication is required for users."""
+        res = self.client.get(USER_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PrivateUserApiTests(TestCase):
+    """Test API requests that require authentication."""
+
+    def setUp(self):
+        self.user = create_user(
+            name="Test User",
+            email="user@example.com",
+            password="Testpassword.12345",
+            address="123 Test St",
+            phone_number="0123456789",
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_retrieve_profile_success(self):
+        """Test retrieving profile successfully."""
+        res = self.client.get(USER_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertNotIn('password', res.data)
+        self.assertEqual(res.data, {
+            'name': self.user.name,
+            'email': self.user.email,
+            'address': self.user.address,
+            'phone_number': self.user.phone_number,
+        })
+
+    def test_post_users_not_allowed(self):
+        """Test POST is not allowed for the users endpoint."""
+        res = self.client.post(USER_URL, {})
+
+        self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_update_user_profile(self):
+        """Test for update user profile."""
+        payload = {
+            'name': 'Updated Name',
+            'password': 'Newpassword.12345',
+            'address': '456 Updated St',
+            'phone_number': '9876543210',
+        }
+
+        res = self.client.patch(USER_URL, payload)
+
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.name, payload['name'])
+        self.assertEqual(self.user.address, payload['address'])
+        self.assertEqual(self.user.phone_number, payload['phone_number'])
+        self.assertTrue(self.user.check_password(payload['password']))
+        self.assertNotIn('password', res.data)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)

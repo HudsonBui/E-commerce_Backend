@@ -6,6 +6,7 @@ from django.contrib.auth import (
     get_user_model,
     authenticate,
 )
+from django.core.mail import send_mail
 from django.utils.translation import gettext as _
 
 from rest_framework import serializers
@@ -41,7 +42,20 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create a user with encrypted password and return it."""
-        return get_user_model().objects.create_user(**validated_data)
+        user = get_user_model().objects.create_user(**validated_data)
+        user.is_verified = False
+        code = user.generate_verification_code()
+        send_mail(
+            subject='Welcome to ECommerce App',
+            message=(
+                f'Your verification code is: {code}\n'
+                f'It expires in 10 minutes.'
+            ),
+            from_email='hudsonbui369vn@gmail.com',
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+        return user
 
     def update(self, instance, validated_data):
         """update and return user."""

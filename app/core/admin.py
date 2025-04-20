@@ -14,7 +14,7 @@ class UserAdmin(BaseUserAdmin):
         'name',
         'phone_number',
         'address',
-        'is_first_time_user',
+        'is_verified',
         'is_active',
     ]
     fieldsets = (
@@ -39,6 +39,7 @@ class UserAdmin(BaseUserAdmin):
                 'address',
                 'is_active',
                 'is_staff',
+                'is_verified',
                 'is_superuser',
             ),
         }),

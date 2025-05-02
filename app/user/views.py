@@ -13,8 +13,6 @@ from rest_framework import (
 from rest_framework.response import Response
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
-from rest_framework.parsers import MultiPartParser
-from rest_framework.decorators import action
 
 from user.serializers import (
     UserSerializer,
@@ -56,7 +54,7 @@ class UserImageUploadView(views.APIView):
     def get_object(self):
         """Return the authenticated user."""
         return self.request.user
-    
+
     def put(self, request):
         """Handle uploading an image to the user."""
         user = self.get_object()

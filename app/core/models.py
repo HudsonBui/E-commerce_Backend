@@ -52,7 +52,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=10, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     birthday = models.DateField(blank=True, null=True)
-    image = models.ImageField(upload_to=user_image_file_path, blank=True, null=True)
+    image = models.ImageField(
+        upload_to=user_image_file_path,
+        blank=True,
+        null=True
+    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)

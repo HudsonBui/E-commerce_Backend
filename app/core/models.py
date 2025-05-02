@@ -1,6 +1,8 @@
 """
 Database models.
 """
+import uuid
+import os
 
 from django.db import models
 from django.utils import timezone
@@ -11,6 +13,14 @@ from django.contrib.auth.models import (
 )
 
 import random
+
+
+def user_image_file_path(instance, filename):
+    """Generate file path for new user image."""
+    ext = os.path.splitext(filename)[1]
+    filename = f"{uuid.uuid4()}{ext}"
+
+    return os.path.join("uploads", 'user', filename)
 
 
 class UserManager(BaseUserManager):
@@ -42,7 +52,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=10, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     birthday = models.DateField(blank=True, null=True)
-    image = models.ImageField(upload_to="user_images", blank=True, null=True)
+    image = models.ImageField(upload_to=user_image_file_path, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)

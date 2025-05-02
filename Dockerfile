@@ -19,7 +19,8 @@ RUN apt-get update && \
     zlib1g-dev \
     libpng-dev \
     libfreetype6-dev \
-    libwebp-dev
+    libwebp-dev \
+    && rm -rf /var/lib/apt/lists/*  # Clean up to reduce image size
 
 # Setup Python environment
 RUN python -m venv /py && \
@@ -27,7 +28,8 @@ RUN python -m venv /py && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ $DEV = "true" ]; \
     then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
-    fi
+    fi && \
+    rm -rf /tmp/requirements.txt /tmp/requirements.dev.txt  # Clean up temp files
 
 # Setup user and directories
 RUN adduser \

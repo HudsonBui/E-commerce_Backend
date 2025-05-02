@@ -16,7 +16,15 @@ class UserSerializer(serializers.ModelSerializer):
     """Serializer for the user object."""
     class Meta:
         model = get_user_model()
-        fields = ('email', 'password', 'name', 'address', 'phone_number')
+        fields = (
+            'email',
+            'password',
+            'name',
+            'address',
+            'phone_number',
+            'birthday',
+            'image',
+        )
         extra_kwargs = {
             'password': {'write_only': True, 'min_length': 14}
         }
@@ -65,6 +73,17 @@ class UserSerializer(serializers.ModelSerializer):
             user.set_password(password)
             user.save()
         return user
+
+
+class UserImageSerializer(serializers.ModelSerializer):
+    """Serializer for uploading images."""
+
+    image = serializers.ImageField(required=True)
+
+    class Meta:
+        model = get_user_model()
+        fields = ('id', 'name', 'image')
+        read_only_fields = ('id', 'name')
 
 
 class AuthTokenSerializer(serializers.Serializer):

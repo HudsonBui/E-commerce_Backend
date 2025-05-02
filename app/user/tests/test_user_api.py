@@ -216,7 +216,11 @@ class ImageUploadTests(TestCase):
             img.save(image_file, format='JPEG')
             image_file.seek(0)
             payload = {'image': image_file}
-            res = self.client.put(IMAGE_UPLOAD_URL, payload, format='multipart')
+            res = self.client.put(
+                IMAGE_UPLOAD_URL,
+                payload,
+                format='multipart',
+            )
 
         self.user.refresh_from_db()
         self.assertEqual(res.status_code, status.HTTP_200_OK)

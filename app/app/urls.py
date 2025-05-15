@@ -34,7 +34,10 @@ urlpatterns = [
     path('api/user/', include('user.urls')),
     path('api/verify/', include('email_verification.urls')),
     path("", include('social_django.urls', namespace='social')),
-    path('api/oauth/', include('oauth.urls'))
+    path('api/oauth/', include('oauth.urls')),
+    path('api/product/', include('product.urls')),
+    path('api/cart/', include('cart.urls')),
+    path('api/order/', include('order.urls')),
 ]
 
 if settings.DEBUG:

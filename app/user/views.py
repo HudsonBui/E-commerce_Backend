@@ -4,10 +4,8 @@ Views for the user api.
 
 from rest_framework import (
     generics,
-    authentication,
     permissions,
     status,
-    views,
 )
 
 from rest_framework.response import Response
@@ -37,7 +35,6 @@ class CreateTokenView(ObtainAuthToken):
 class ManageUserView(generics.RetrieveUpdateAPIView):
     """Manage the authenticated user."""
     serializer_class = UserSerializer
-    authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
@@ -45,11 +42,9 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
-class UserImageUploadView(views.APIView):
+class UserImageUploadView(generics.GenericAPIView):
     """ViewSet for user operations."""
-    serializer_class = UserSerializer
-    authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserImageSerializer
 
     def get_object(self):
         """Return the authenticated user."""
@@ -58,7 +53,7 @@ class UserImageUploadView(views.APIView):
     def put(self, request):
         """Handle uploading an image to the user."""
         user = self.get_object()
-        serializer = UserImageSerializer(user, data=request.data)
+        serializer = self.get_serializer(user, data=request.data)
 
         if serializer.is_valid():
             serializer.save()

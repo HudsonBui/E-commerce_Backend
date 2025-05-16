@@ -13,6 +13,8 @@ from core.models import (
     Coupon,
 )
 
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+
 
 class AddressViewSet(viewsets.ModelViewSet):
     """ViewSet for Address model"""
@@ -44,10 +46,27 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='order_status',
+                type=str,
+            )
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
     def get_queryset(self):
         """Return the list of orders for the authenticated user"""
         user = self.request.user
-        return Order.objects.filter(user=user).order_by('-id')
+        order_status = self.request.query_params.get('order_status')
+        if order_status:
+            return Order.objects.filter(
+                user=user,
+                order_status=order_status
+            ).order_by('-order_date')
+        return Order.objects.filter(user=user).order_by('-order_date')
 
     def get_serializer_class(self):
         """Return the appropriate serializer class based on the action"""

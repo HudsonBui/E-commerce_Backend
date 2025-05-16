@@ -24,6 +24,14 @@ def user_image_file_path(instance, filename):
     return os.path.join("uploads", 'user', filename)
 
 
+def review_image_file_path(instance, filename):
+    """Generate file path for new review image."""
+    ext = os.path.splitext(filename)[1]
+    filename = f"{uuid.uuid4()}{ext}"
+
+    return os.path.join("uploads", 'review', filename)
+
+
 class UserManager(BaseUserManager):
     """Manager for users."""
 
@@ -256,10 +264,24 @@ class Address(models.Model):
     )
     recipient_name = models.CharField(max_length=255)
     recipient_phone_number = models.CharField(max_length=10)
+    country = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        choices=[
+            ("VN", "Vietnam"),
+            ("US", "United States"),
+            ("JP", "Japan"),
+            ("KR", "South Korea"),
+            ("CN", "China"),
+        ],
+        default="US",
+    )
     address_line = models.CharField(max_length=255, blank=True, null=True)
-    province = models.CharField(max_length=100)
-    district = models.CharField(max_length=100)
-    ward = models.CharField(max_length=100)
+    city = models.CharField(max_length=255, blank=True, null=True)
+    state = models.CharField(max_length=255, blank=True, null=True)
+    postal_code = models.CharField(max_length=10, blank=True, null=True)
+
     is_default = models.BooleanField(default=False)
 
 
@@ -403,6 +425,20 @@ class Review(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class ReviewImage(models.Model):
+    """Image for a review."""
+    review = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE,
+        related_name="images"
+    )
+    image = models.ImageField(
+        upload_to=review_image_file_path,
+        blank=True,
+        null=True
+    )
 
 
 class Payment(models.Model):

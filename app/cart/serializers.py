@@ -53,7 +53,7 @@ class CartItemSerializer(serializers.ModelSerializer):
     def get_generic_product_info(self, obj):
         """Get generic product information"""
         product = obj.product_detail.product if obj.product_detail else None
-        if not product:
+        if product is None:
             logger.warning("Product not found for the given product detail.")
             return {}
         serializer = ProductGenericSerializer(product, context=self.context)
@@ -64,7 +64,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         product_detail_data = validated_data.pop('product_detail', None)
         cart = Cart.objects.get(user=self.context['request'].user)
 
-        if not product_detail_data:
+        if product_detail_data is None:
             logger.error("Product detail is required to create a cart item.")
             raise serializers.ValidationError("Product detail is required.")
 

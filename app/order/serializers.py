@@ -20,9 +20,10 @@ class AddressSerializer(serializers.ModelSerializer):
             'recipient_name',
             'recipient_phone_number',
             'address_line',
-            'province',
-            'district',
-            'ward',
+            'country',
+            'city',
+            'state',
+            'postal_code',
             'is_default',
         ]
         read_only_fields = ['id']

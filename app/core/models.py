@@ -161,6 +161,12 @@ class Product(models.Model):
     )
     is_watch = models.BooleanField(default=False)
     review_count_sample = models.PositiveIntegerField(default=0)
+    average_rating_sample = models.DecimalField(
+        max_digits=3,
+        decimal_places=2,
+        default=0.00,
+        validators=[MaxValueValidator(5)],
+    )
     average_rating = models.DecimalField(
         max_digits=3,
         decimal_places=2,

@@ -99,7 +99,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Category(models.Model):
     """Category of the products."""
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     parent_category = models.ForeignKey(
         "self",
         on_delete=models.CASCADE,
@@ -112,13 +112,13 @@ class Category(models.Model):
 
 class Product(models.Model):
     """Product in the system."""
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=1023)
     category = models.ManyToManyField(
         Category,
         related_name="products"
     )
     description = models.TextField(blank=True, null=True)
-    material = models.CharField(max_length=255, blank=True, null=True)
+    material = models.CharField(max_length=1023, blank=True, null=True)
     weight = models.DecimalField(
         max_digits=100,
         decimal_places=2,
@@ -138,8 +138,8 @@ class Product(models.Model):
         default="kg",
     )
     stock_quantity = models.PositiveIntegerField(default=0)
-    node_name = models.CharField(max_length=255, blank=True, null=True)
-    style = models.CharField(max_length=255, blank=True, null=True)
+    node_name = models.CharField(max_length=1023, blank=True, null=True)
+    style = models.CharField(max_length=1023, blank=True, null=True)
     currency = models.CharField(
         max_length=3,
         choices=[

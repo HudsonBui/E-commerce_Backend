@@ -76,4 +76,3 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     """Retrieve all and a single product"""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    pagination_class = None

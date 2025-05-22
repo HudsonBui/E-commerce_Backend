@@ -261,6 +261,21 @@ class ProductDetail(models.Model):
     )
 
 
+class UserWatchedProduct(models.Model):
+    """User product watched list."""
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="watched_products"
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="watched_by_users"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class Address(models.Model):
     """User address."""
     user = models.ForeignKey(

@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'cart',
     'order',
     'review',
+    'watched_list',
 ]
 
 MIDDLEWARE = [
@@ -168,7 +169,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10  # Number of items per page
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For testing
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For testing
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # # For production:
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

@@ -392,7 +392,7 @@ class OrderItemInline(admin.TabularInline):
     model = models.OrderItem
     extra = 1  # Number of empty forms to display
     fields = ('product_detail', 'quantity', 'total_price')
-    readonly_fields = ('price', 'total_price')
+    readonly_fields = ('product_detail', 'total_price')
 
     def total_price(self, obj):
         """Calculate total price for the order item."""

@@ -34,6 +34,8 @@ services:
       - app
     ports:
       - "80:8000"
+    volumes:
+    - static-data:/vol/web
 
 volumes:
   postgres-data:

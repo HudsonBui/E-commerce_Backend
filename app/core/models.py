@@ -109,6 +109,13 @@ class Category(models.Model):
     )
     description = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+        parent_info = "No Parent"
+        if self.parent_category:
+            parent_info = self.parent_category.name
+
+        return f"{self.name} ({parent_info})"
+
 
 class Product(models.Model):
     """Product in the system."""
@@ -159,7 +166,6 @@ class Product(models.Model):
         blank=True,
         null=True,
     )
-    is_watch = models.BooleanField(default=False)
     review_count_sample = models.PositiveIntegerField(default=0)
     average_rating_sample = models.DecimalField(
         max_digits=3,
@@ -174,6 +180,10 @@ class Product(models.Model):
         validators=[MaxValueValidator(5)],
     )
     review_count = models.PositiveIntegerField(default=0)
+
+    # Add this method
+    def __str__(self):
+        return self.name
 
 
 class ProductImage(models.Model):
@@ -196,6 +206,9 @@ class ProductImage(models.Model):
             ).update(is_primary=False)
         super().save(*args, **kwargs)
 
+    def __str__(self):
+        return f"Image for {self.product.name}"
+
 
 class ProductVariant(models.Model):
     """Product variant combination between colors and sizes.
@@ -208,6 +221,9 @@ class ProductVariant(models.Model):
     color = models.CharField(max_length=255)
     size = models.TextField(blank=True, null=True)
     stock_quantity = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.product.name} - {self.color} - {self.size}"
 
 
 class ProductDetailInformation(models.Model):
@@ -259,6 +275,14 @@ class ProductDetail(models.Model):
         blank=True,
         null=True,
     )
+
+    def __str__(self):
+        variant_info = "No Variant"
+        if self.detail_variant:
+            variant_info = (
+                f"{self.detail_variant.color} - {self.detail_variant.size}"
+            )
+        return f"{self.product.name} - {variant_info} - Price: {self.price}"
 
 
 class UserWatchedProduct(models.Model):
@@ -337,6 +361,9 @@ class Coupon(models.Model):
     end_date = models.DateTimeField()
     is_active = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.code
+
 
 class Order(models.Model):
     """Order of the User."""
@@ -380,6 +407,12 @@ class Order(models.Model):
         ],
         default="pending",
     )
+
+    def __str__(self):
+        return (
+            f"Order {self.id} by {self.user.email} "
+            f"on {self.order_date.strftime('%Y-%m-%d %H:%M:%S')}"
+        )
 
 
 class OrderItem(models.Model):
@@ -446,6 +479,12 @@ class Review(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return (
+            f"Review by {self.user.email}"
+            f"for {self.product.product.name} - Rating: {self.rating}"
+        )
 
 
 class ReviewImage(models.Model):
@@ -530,6 +569,7 @@ class Notification(models.Model):
         on_delete=models.CASCADE,
         related_name="notifications"
     )
+    title = models.CharField(max_length=255, default="Notification")
     message = models.TextField()
     type = models.CharField(
         max_length=50,

@@ -1,0 +1,18 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls %}
+
+{% block content %}
+<div id="content-main">
+  <form action="" method="post">
+    {% csrf_token %}
+    <div>
+      <h1>{{ title }}</h1>
+      {{ form.as_p }}
+      <p>
+        <input type="hidden" name="action" value="broadcast_notification">
+        <input type="submit" name="apply" value="Send Notification">
+      </p>
+    </div>
+  </form>
+</div>
+{% endblock %}

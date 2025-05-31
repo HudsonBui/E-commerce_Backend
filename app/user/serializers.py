@@ -57,9 +57,11 @@ class UserSerializer(serializers.ModelSerializer):
             subject='Welcome to ECommerce App',
             message=(
                 f'Your verification code is: {code}\n'
-                f'It expires in 10 minutes.'
+                f'It expires in 10 minutes.\n'
+                f'If you did not see this email, '
+                f'please check your spam folder.'
             ),
-            from_email='hudsonbui369vn@gmail.com',
+            from_email='dangbh39@gmail.com',
             recipient_list=[user.email],
             fail_silently=False,
         )

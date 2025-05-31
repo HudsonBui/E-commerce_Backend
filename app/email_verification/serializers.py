@@ -29,3 +29,8 @@ class VerifyEmailSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 _('User with this email does not exist.')
             )
+
+
+class ResendVerificationCodeSerializer(serializers.Serializer):
+    """Serializer for resending verification code."""
+    pass

@@ -21,6 +21,7 @@ class UserAdmin(BaseUserAdmin):
         'address',
         'is_verified',
         'is_active',
+        'gender',
     ]
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
@@ -28,7 +29,14 @@ class UserAdmin(BaseUserAdmin):
             _('Permissions'),
             {'fields': ('is_active', 'is_staff', 'is_superuser')}
         ),
-        (_('Personal Info'), {'fields': ('name', 'phone_number', 'address')}),
+        (_('Personal Info'), {
+            'fields': (
+                'name',
+                'phone_number',
+                'address',
+                'gender'
+                )
+            }),
         (_('Important Dates'), {'fields': ('last_login',)}),
     )
     readonly_fields = ('last_login',)
@@ -42,6 +50,7 @@ class UserAdmin(BaseUserAdmin):
                 'name',
                 'phone_number',
                 'address',
+                'gender',
                 'is_active',
                 'is_staff',
                 'is_verified',

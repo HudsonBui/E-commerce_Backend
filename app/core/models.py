@@ -66,6 +66,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         blank=True,
         null=True
     )
+    gender = models.CharField(
+        max_length=10,
+        choices=[
+            ('male', 'Male'),
+            ('female', 'Female'),
+            ('other', 'Other'),
+        ],
+        default='other',
+        blank=True,
+        null=True
+    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)

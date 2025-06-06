@@ -594,3 +594,26 @@ class Notification(models.Model):
     )
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class UserAction(models.Model):
+    """User action log."""
+    user_id = models.CharField(max_length=100)
+    product_id = models.CharField(max_length=100)
+    event_type = models.CharField(
+        max_length=50,
+        choices=[
+            ("view", "View"),
+            ("cart", "Add to Cart"),
+            ("purchase", "Purchase"),
+            ("remove_from_cart", "Remove from Cart"),
+        ],
+        default="view",
+    )
+    event_time = models.DateTimeField(auto_now_add=True)
+    score = models.FloatField(default=1.0)
+
+    def __str__(self):
+        return (f"{self.user_id} - "
+                f"{self.event_type} - "
+                f"{self.product_id}")

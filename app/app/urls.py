@@ -40,6 +40,7 @@ urlpatterns = [
     path('api/order/', include('order.urls')),
     path('api/review/', include('review.urls')),
     path('api/product-history/', include('watched_list.urls')),
+    path('api/recommendation/', include('recommendation.urls')),
 ]
 
 if settings.DEBUG:

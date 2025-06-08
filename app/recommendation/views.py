@@ -49,6 +49,7 @@ class LogUserActionView(APIView):
 
 class RecommendationViewSet(viewsets.ViewSet):
     """ViewSet for user recommendations"""
+    serializer_class = ProductGenericSerializer
 
     @action(detail=False, methods=['get'])
     def for_user(self, request):

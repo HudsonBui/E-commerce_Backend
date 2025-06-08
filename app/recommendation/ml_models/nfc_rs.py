@@ -64,8 +64,9 @@ def load_and_preprocess_data():
         interactions['product_id'].astype(str))
 
     # Save encoders for inference
-    models_dir = os.path.join(
-        settings.MEDIA_ROOT, 'ml_models')
+    models_dir = getattr(
+        settings, 'RECOMMENDATION_MODEL_DIR',
+        os.path.join(settings.MEDIA_ROOT, 'trained_model'))
     os.makedirs(models_dir, exist_ok=True)
 
     with open(os.path.join(
@@ -175,8 +176,9 @@ def train_model(interactions, num_users, num_products):
     )
 
     # Save model
-    models_dir = os.path.join(
-        settings.MEDIA_ROOT, 'ml_models')
+    models_dir = getattr(
+        settings, 'RECOMMENDATION_MODEL_DIR',
+        os.path.join(settings.MEDIA_ROOT, 'trained_model'))
     os.makedirs(models_dir, exist_ok=True)
     model_path = os.path.join(
         models_dir, 'ncf_model.h5')

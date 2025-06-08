@@ -216,3 +216,6 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
 )
+
+# Recommendation model settings
+RECOMMENDATION_MODEL_DIR = os.path.join(BASE_DIR, 'recommendation/ml_models/trained_model')

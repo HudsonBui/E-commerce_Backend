@@ -9,16 +9,22 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('event_file', type=str)
+        parser.add_argument('event_file11', type=str)
 
     def handle(self, *args, **options):
         try:
             event_file = options['event_file']
+            event_file1 = options['event_file11']
             self.stdout.write(f"Attempting to read file: {event_file}")
+            self.stdout.write(f"Attempting to read file: {event_file1}")
 
             # Load data
             events = pd.read_csv(event_file)
+            events1 = pd.read_csv(event_file1)
             self.stdout.write(
                 f"Successfully loaded CSV with {len(events)} rows")
+            self.stdout.write(
+                f"Successfully loaded CSV with {len(events1)} rows")
 
             # Get product IDs from the database
             available_product_ids = list(
@@ -40,12 +46,20 @@ class Command(BaseCommand):
                     ['view', 'cart', 'purchase', 'remove_from_cart']
                 )
                 ]
+            valid_events1 = events1[
+                events1['event_type'].isin(
+                    ['view', 'cart', 'purchase', 'remove_from_cart']
+                )
+                ]
 
             self.stdout.write("Mapping valid events to product IDs")
             # Map product IDs to ASINs
             np.random.seed(42)
             valid_events['mapped_product_id'] = np.random.choice(
                 available_product_ids, size=len(valid_events)
+            )
+            valid_events1['mapped_product_id'] = np.random.choice(
+                available_product_ids, size=len(valid_events1)
             )
 
             # Assign scores
@@ -57,13 +71,37 @@ class Command(BaseCommand):
             }
             valid_events['score'] = valid_events[
                 'event_type'].map(event_weights)
+            valid_events1['score'] = valid_events1[
+                'event_type'].map(event_weights)
 
             self.stdout.write(
                 f"Start to create UserAction objects for "
                 f"{len(valid_events)} valid events")
+            self.stdout.write(
+                f"Start to create UserAction objects for "
+                f"{len(valid_events1)} valid events")
             # Import to UserAction
             batch_size = 1000
             total_created = 0
+
+            user_actions1 = [
+                UserAction(
+                    user_id=str(row['user_id']),
+                    product_id=row['mapped_product_id'],
+                    event_type=row['event_type'],
+                    event_time=pd.to_datetime(row['event_time']),
+                    score=row['score']
+                )
+                for _, row in valid_events1.iterrows()
+            ]
+
+            UserAction.objects.bulk_create(
+                user_actions1, batch_size=len(user_actions1))
+
+            self.stdout.write(self.style.SUCCESS(
+                'Imported user no.3\'s event actions successfully'))
+
+            del user_actions1
 
             for batch_start in range(0, len(valid_events), batch_size):
                 batch_end = min(

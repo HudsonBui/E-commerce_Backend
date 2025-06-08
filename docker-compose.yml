@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   app:
     build:
@@ -26,6 +24,13 @@ services:
       - DEBUG=1
     depends_on:
       - db
+    deploy:
+      # resources:
+      #   reservations:
+      #     devices:
+      #       - driver: nvidia
+      #         count: all
+      #         capabilities: [gpu]
 
   db:
     image: postgres:bookworm

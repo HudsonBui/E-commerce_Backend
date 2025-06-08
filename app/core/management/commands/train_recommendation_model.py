@@ -1,8 +1,7 @@
 from django.core.management.base import BaseCommand
-from app.recommendation.ml_models.nfc_rs import (
-    load_and_preprocess_data, train_model
-)
-from app.recommendation.ml_models.nfc_rs import (
+from recommendation.ml_models.nfc_rs import (
+    load_and_preprocess_data,
+    train_model,
     get_recommendations
 )
 

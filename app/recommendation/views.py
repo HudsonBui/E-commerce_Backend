@@ -6,10 +6,17 @@ from recommendation.services import recomm_svc
 from rest_framework import status
 from core.models import UserAction, Product
 import pandas as pd
-from product.serializers import ProductGenericSerializer
+from product.serializers import (
+    ProductGenericSerializer,
+)
+from recommendation.serializers import (
+    UserActionSerializer)
 
 
 class LogUserActionView(APIView):
+    """API View to log user actions"""
+    serializer_class = UserActionSerializer
+
     def post(self, request):
         user_id = request.user.id
         product_id = request.data.get('product_id')

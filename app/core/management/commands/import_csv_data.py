@@ -76,31 +76,51 @@ class Command(BaseCommand):
                 with transaction.atomic():  # Ensure atomicity for each product
                     try:
                         breadcrumbs = json.loads(row['breadcrumbs'])
-                        variants = json.loads(row['variants']) if pd.notna(row['variants']) else []
+                        variants = json.loads(
+                            row['variants']) if pd.notna(
+                                row['variants']) else []
                         product_details = json.loads(row['Product detail'])
                         image_urls = json.loads(row['imageUrls'])
-                        features = json.loads(row['features']) if pd.notna(row['features']) else []
+                        features = json.loads(
+                            row['features']) if pd.notna(
+                                row['features']) else []
 
                         # Create category hierarchy and get leaf category
-                        leaf_category = get_or_create_category_hierarchy(breadcrumbs)
+                        leaf_category = get_or_create_category_hierarchy(
+                            breadcrumbs)
 
                         # Create Product instance
-                        description = "About this item:\n" + "\n • ".join(features)
+                        description = "About this item:\n" + "\n • ".join(
+                            features)
                         product = Product(
                             name=row['name'],
                             description=description,
-                            material=row['material'] if pd.notna(row['material']) else None,
-                            weight=float(row['weight_value']) if pd.notna(row['weight_value']) else None,
+                            material=row['material'] if pd.notna(
+                                row['material']) else None,
+                            weight=float(
+                                row['weight_value']) if pd.notna(
+                                    row['weight_value']) else None,
                             weight_unit=normalize_weight_unit(
-                                (row['weight_unit'] if pd.notna(row['weight_unit']) else None)
+                                (row['weight_unit'] if pd.notna(
+                                    row['weight_unit']) else None)
                             ),
-                            stock_quantity=int(row['quantity']) if pd.notna(row['quantity']) else 0,
-                            node_name=row['nodeName'] if pd.notna(row['nodeName']) else None,
-                            style=row['style'] if pd.notna(row['style']) else None,
+                            stock_quantity=int(
+                                row['quantity']) if pd.notna(
+                                    row['quantity']) else 0,
+                            node_name=row['nodeName'] if pd.notna(
+                                row['nodeName']) else None,
+                            style=row['style'] if pd.notna(
+                                row['style']) else None,
                             currency=row['currency'],
-                            price=float(row['listedPrice']) if pd.notna(row['listedPrice']) else 0.00,
-                            average_rating=float(row['rating']) if pd.notna(row['rating']) else 0.00,
-                            review_count=int(row['reviewCount']) if pd.notna(row['reviewCount']) else 0,
+                            price=float(
+                                row['listedPrice']) if pd.notna(
+                                    row['listedPrice']) else 0.00,
+                            average_rating=float(
+                                row['rating']) if pd.notna(
+                                    row['rating']) else 0.00,
+                            review_count=int(
+                                row['reviewCount']) if pd.notna(
+                                    row['reviewCount']) else 0,
                             review_count_sample=0,
                             average_rating_sample=0.00
                         )
@@ -115,7 +135,8 @@ class Command(BaseCommand):
                                 is_primary=(i == 0)  # First image is primary
                             )
 
-                        # Parse variants and create ProductVariant and ProductDetail instances
+                        # Parse variants and create ProductVariant
+                        # and ProductDetail instances
                         colors = {v['color'] for v in variants if 'color' in v}
                         sizes = {v['size'] for v in variants if 'size' in v}
 
@@ -132,8 +153,12 @@ class Command(BaseCommand):
                                         ProductDetail.objects.create(
                                             product=product,
                                             detail_variant=variant,
-                                            price=float(row['listedPrice']) if pd.notna(row['listedPrice']) else 0.00,
-                                            sale_price=float(row['salePrice']) if pd.notna(row['salePrice']) else 0.00
+                                            price=float(
+                                                row['listedPrice']) if pd.notna(
+                                                    row['listedPrice']) else 0.00,
+                                            sale_price=float(
+                                                row['salePrice']) if pd.notna(
+                                                    row['salePrice']) else 0.00
                                         )
                             elif colors:
                                 for color in colors:
@@ -146,8 +171,12 @@ class Command(BaseCommand):
                                     ProductDetail.objects.create(
                                         product=product,
                                         detail_variant=variant,
-                                        price=float(row['listedPrice']) if pd.notna(row['listedPrice']) else 0.00,
-                                        sale_price=float(row['salePrice']) if pd.notna(row['salePrice']) else 0.00
+                                        price=float(
+                                            row['listedPrice']) if pd.notna(
+                                                row['listedPrice']) else 0.00,
+                                        sale_price=float(
+                                            row['salePrice']) if pd.notna(
+                                                row['salePrice']) else 0.00
                                     )
                             elif sizes:
                                 color = row['color'] if pd.notna(row['color']) else "Standard"
@@ -161,15 +190,22 @@ class Command(BaseCommand):
                                     ProductDetail.objects.create(
                                         product=product,
                                         detail_variant=variant,
-                                        price=float(row['listedPrice']) if pd.notna(row['listedPrice']) else 0.00,
-                                        sale_price=float(row['salePrice']) if pd.notna(row['salePrice']) else 0.00
+                                        price=float(
+                                            row['listedPrice']) if pd.notna(
+                                                row['listedPrice']) else 0.00,
+                                        sale_price=float(
+                                            row['salePrice']) if pd.notna(row['salePrice']) else 0.00
                                     )
                         else:
                             ProductDetail.objects.create(
                                 product=product,
                                 detail_variant=None,
-                                price=float(row['listedPrice']) if pd.notna(row['listedPrice']) else 0.00,
-                                sale_price=float(row['salePrice']) if pd.notna(row['salePrice']) else 0.00
+                                price=float(
+                                    row['listedPrice']) if pd.notna(
+                                        row['listedPrice']) else 0.00,
+                                sale_price=float(
+                                    row['salePrice']) if pd.notna(
+                                        row['salePrice']) else 0.00
                             )
 
                         # Create ProductDetailInformation instances
@@ -182,14 +218,17 @@ class Command(BaseCommand):
 
                         total_processed += 1
                         self.stdout.write(
-                            f"Progress: {total_processed}/{len(df)} records processed "
+                            f"Progress: {total_processed}/{len(df)} "
+                            "records processed "
                             f"({(total_processed/len(df)*100):.1f}%)"
                         )
                     except Exception as e:
                         self.stdout.write(
-                            self.style.ERROR(f'Error processing row {index}: {e}')
+                            self.style.ERROR(
+                                f'Error processing row {index}: {e}')
                         )
-                        self.stdout.write(self.style.WARNING(f'Row data: {row}'))
+                        self.stdout.write(
+                            self.style.WARNING(f'Row data: {row}'))
                         # Continue to next row on error to process remaining data
                         continue
 

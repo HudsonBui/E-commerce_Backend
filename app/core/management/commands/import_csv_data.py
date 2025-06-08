@@ -103,7 +103,6 @@ class Command(BaseCommand):
                         if pd.notna(row['rating']) else 0.00,
                         review_count=int(row['reviewCount'])
                         if pd.notna(row['reviewCount']) else 0,
-                        is_watch=False,
                         review_count_sample=0,
                         average_rating_sample=0.00
                     )

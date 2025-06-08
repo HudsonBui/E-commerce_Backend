@@ -24,7 +24,7 @@ services:
       - DEBUG=1
     depends_on:
       - db
-    deploy:
+    # deploy:
       # resources:
       #   reservations:
       #     devices:

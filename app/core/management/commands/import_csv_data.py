@@ -63,7 +63,7 @@ class Command(BaseCommand):
         self.stdout.write(f"Successfully loaded CSV with {len(df)} rows")
 
         # Define batch size
-        batch_size = 100
+        batch_size = 10
         total_processed = 0
 
         for batch_start in range(0, len(df), batch_size):

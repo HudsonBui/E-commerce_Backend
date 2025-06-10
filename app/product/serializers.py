@@ -133,14 +133,14 @@ class ProductGenericSerializer(serializers.ModelSerializer):
             'sale_price'
         ]
 
-    def get_original_price(self, obj):
+    def get_original_price(self, obj) -> float:
         """Get original price of the product."""
         if not obj.product_details.exists():
             return 0.0
 
         return obj.product_details.order_by('price').first().price
 
-    def get_sale_price(self, obj):
+    def get_sale_price(self, obj) -> float:
         """Get sale price of the product."""
         if not obj.product_details.exists():
             return 0.0
@@ -163,13 +163,20 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ProductGenericSerializer.Meta.fields + [
+        fields = [
+            'id',
+            'name',
+            'images',
+            'average_rating',
+            'review_count',
+            'price',
             'description',
             'material',
             'weight',
             'weight_unit',
             'stock_quantity',
             'node_name',
+            'product_details',
             'style',
             'currency',
             'detail_information',

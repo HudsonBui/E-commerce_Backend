@@ -114,8 +114,10 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
 
 class ProductGenericSerializer(serializers.ModelSerializer):
+
     """Serializer for general product information."""
-    product_details = ProductDetailSerializer(many=True)
+    original_price = serializers.SerializerMethodField()
+    sale_price = serializers.SerializerMethodField()
     images = ProductImageSerializer(many=True)
 
     class Meta:
@@ -127,8 +129,24 @@ class ProductGenericSerializer(serializers.ModelSerializer):
             'average_rating',
             'review_count',
             'price',
-            'product_details',
+            'original_price',
+            'sale_price'
         ]
+
+    def get_original_price(self, obj):
+        """Get original price of the product."""
+        if not obj.product_details.exists():
+            return 0.0
+
+        return obj.product_details.order_by('price').first().price
+
+    def get_sale_price(self, obj):
+        """Get sale price of the product."""
+        if not obj.product_details.exists():
+            return 0.0
+
+        return obj.product_details.order_by('price').first().sale_price
+
 
 
 class ProductSerializer(serializers.ModelSerializer):

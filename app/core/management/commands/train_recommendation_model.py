@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from recommendation.ml_models.nfc_rs import (
+from app.recommendation.ml_models.ncf_rs import (
     load_and_preprocess_data,
     train_model,
     get_recommendations

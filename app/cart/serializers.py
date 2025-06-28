@@ -8,6 +8,7 @@ from core.models import (
     Cart,
     CartItem,
     ProductDetail,
+    ProductVariant,
 )
 
 from product.serializers import (
@@ -45,6 +46,7 @@ class CartItemSerializer(serializers.ModelSerializer):
             'generic_product_info',
             'product_detail',
             'update_date',
+            'is_checked',
             'quantity',
         ]
         read_only_fields = ('id',)
@@ -68,8 +70,38 @@ class CartItemSerializer(serializers.ModelSerializer):
             logger.error("Product detail is required to create a cart item.")
             raise serializers.ValidationError("Product detail is required.")
 
+        # Extract detail_variant data and handle it separately
+        variant_data = product_detail_data.pop('detail_variant', None)
+        print(f"detail_variant_data: {variant_data}, type: {type(variant_data)}")
+        variant_id = variant_data.get('id') if variant_data else None
+
+        # Create a clean query dict with just the fields that match the model
+        query_params = {}
+
+        if 'product' in product_detail_data:
+            print(f"Check: {product_detail_data['product']}")
+            query_params['product'] = product_detail_data['product']
+
+        if 'price' in product_detail_data:
+            print(f"Check: {product_detail_data['price']}")
+            query_params['price'] = product_detail_data['price']
+
+        if 'sale_price' in product_detail_data:
+            print(f"Check: {product_detail_data['sale_price']}")
+            query_params['sale_price'] = product_detail_data['sale_price']
+
+        # Add the variant if we found an ID
+        if variant_id:
+            try:
+                print(f"Check: {variant_id}")
+                variant = ProductVariant.objects.get(id=variant_id)
+                query_params['detail_variant'] = variant
+            except ProductVariant.DoesNotExist:
+                logger.error(f"Variant with ID {variant_id} not found")
+                raise serializers.ValidationError(f"Variant with ID {variant_id} not found")
+
         try:
-            product_detail = ProductDetail.objects.get(**product_detail_data)
+            product_detail = ProductDetail.objects.get(**query_params)
         except ProductDetail.DoesNotExist:
             logger.error("Product detail not found.")
             raise serializers.ValidationError("Product detail not found.")
@@ -107,10 +139,34 @@ class CartItemSerializer(serializers.ModelSerializer):
         # Handle product detail changes
         product_detail_data = validated_data.pop('product_detail', None)
         if product_detail_data is not None:
+            # Extract detail_variant data and handle it separately
+            variant_data = product_detail_data.pop('detail_variant', None)
+            print(f"detail_variant_data: {variant_data}, type: {type(variant_data)}")
+            variant_id = variant_data.get('id') if variant_data else None
+
+            # Create a clean query dict with just the fields that match the model
+            query_params = {}
+
+            if 'product' in product_detail_data:
+                query_params['product'] = product_detail_data['product']
+
+            if 'price' in product_detail_data:
+                query_params['price'] = product_detail_data['price']
+
+            if 'sale_price' in product_detail_data:
+                query_params['sale_price'] = product_detail_data['sale_price']
+
+            # Add the variant if we found an ID
+            if variant_id:
+                try:
+                    variant = ProductVariant.objects.get(id=variant_id)
+                    query_params['detail_variant'] = variant
+                except ProductVariant.DoesNotExist:
+                    logger.error(f"Variant with ID {variant_id} not found")
+                    raise serializers.ValidationError(f"Variant with ID {variant_id} not found")
+
             try:
-                product_detail = ProductDetail.objects.get(
-                    **product_detail_data
-                )
+                product_detail = ProductDetail.objects.get(**query_params)
                 instance.product_detail = product_detail
             except ProductDetail.DoesNotExist:
                 logger.error("Product detail not found.")

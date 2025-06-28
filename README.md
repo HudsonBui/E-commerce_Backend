@@ -74,16 +74,7 @@ A robust and scalable e-commerce REST API backend built with Django and Django R
 2. Access the API at http://127.0.0.1:8000/api/
 3. API Documentation is available at http://127.0.0.1:8000/api/docs/
 
-## API Endpoints
 
-### Authentication
-
-- `POST /api/user/sign-up/`: Register a new user
-- `POST /api/user/login/`: Obtain authentication token
-- `GET /api/user/me/`: Retrieve or update authenticated user profile
-- `PUT /api/user/upload-image/`: Upload user profile image
-- `POST /api/verify/verify-email/`: Verify user email address
-- `POST /api/oauth/auth/{provider}/`: Authenticate with social providers
 
 ### Products
 

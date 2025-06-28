@@ -8,6 +8,7 @@ from tensorflow.keras.layers import (
     Embedding,
     Dense,
     Concatenate,
+    Multiply,
     Flatten)
 import pickle
 import os
@@ -18,7 +19,7 @@ from django.db.models import Sum
 from core.models import UserAction, Product
 
 
-# Step 1: Load and Preprocess Data from Django models
+# Load and Preprocess Data from Django models
 def load_and_preprocess_data():
     """Load user actions from database
     and preprocess data for model training"""
@@ -85,45 +86,49 @@ def load_and_preprocess_data():
         len(product_encoder.classes_))
 
 
-# Step 2: Build Neural Collaborative Filtering Model
-def build_ncf_model(num_users, num_products, embedding_dim=50):
-    """Build a neural collaborative filtering model"""
+# Build Neural Collaborative Filtering Model
+def build_ncf_model(num_users, num_products, embedding_dim=50, model_type="neumf"):
+    """Build a neural collaborative filtering model with GMF, MLP, or NeuMF"""
     # Input layers
     user_input = Input(shape=(1,), name='user_input')
     product_input = Input(shape=(1,), name='product_input')
 
-    # Embedding layers
-    user_embedding = Embedding(
-        num_users,
-        embedding_dim,
-        name='user_embedding')(user_input)
-    product_embedding = Embedding(
-        num_products,
-        embedding_dim,
-        name='product_embedding')(product_input)
+    # Shared embedding layers
+    user_embedding_gmf = Embedding(num_users, embedding_dim, name='user_embedding_gmf')(user_input)
+    product_embedding_gmf = Embedding(num_products, embedding_dim, name='product_embedding_gmf')(product_input)
+    user_embedding_mlp = Embedding(num_users, embedding_dim * 2, name='user_embedding_mlp')(user_input)
+    product_embedding_mlp = Embedding(num_products, embedding_dim * 2, name='product_embedding_mlp')(product_input)
 
-    # Flatten embeddings
-    user_vec = Flatten()(user_embedding)
-    product_vec = Flatten()(product_embedding)
+    # GMF branch: Element-wise multiply
+    gmf_vector = Multiply()([Flatten()(user_embedding_gmf), Flatten()(product_embedding_gmf)])
 
-    # Concatenate user and product embeddings
-    concat = Concatenate()([user_vec, product_vec])
+    # MLP branch
+    mlp_vector = Concatenate()([
+        Flatten()(user_embedding_mlp),
+        Flatten()(product_embedding_mlp)
+    ])
+    mlp_vector = Dense(128, activation='relu')(mlp_vector)
+    mlp_vector = Dense(64, activation='relu')(mlp_vector)
 
-    # Dense layers
-    dense = Dense(128, activation='relu')(concat)
-    dense = Dense(64, activation='relu')(dense)
-    output = Dense(1, activation='sigmoid')(dense)
+    # NeuMF: Combine GMF and MLP
+    if model_type.lower() == "gmf":
+        merge_vector = gmf_vector
+    elif model_type.lower() == "mlp":
+        merge_vector = mlp_vector
+    else:  # neuMF
+        merge_vector = Concatenate()([gmf_vector, mlp_vector])
+
+    # Output layer
+    output = Dense(1, activation='sigmoid')(merge_vector)
 
     # Build and compile model
-    model = Model(
-        inputs=[user_input, product_input], outputs=output)
-    model.compile(
-        optimizer='adam', loss='mse', metrics=['mae'])
+    model = Model(inputs=[user_input, product_input], outputs=output)
+    model.compile(optimizer='adam', loss='mse', metrics=['mae'])
 
     return model
 
 
-# Step 3: Train the Model
+# Train the Model
 def train_model(interactions, num_users, num_products):
     """Train the recommendation
     model with user interactions"""
@@ -188,13 +193,13 @@ def train_model(interactions, num_users, num_products):
     return model
 
 
-# Step 4: Generate Recommendations
+# Generate Recommendations
 def get_recommendations(
         user_id,
         model,
         user_encoder,
         product_encoder,
-        top_n=5):
+        top_n=20):
     """Get product recommendations for a specific user"""
 
     # Check if user exists in the model

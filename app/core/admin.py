@@ -15,6 +15,7 @@ class UserAdmin(BaseUserAdmin):
     """Define admin pages for users."""
     ordering = ['id']
     list_display = [
+        'id',
         'email',
         'name',
         'phone_number',

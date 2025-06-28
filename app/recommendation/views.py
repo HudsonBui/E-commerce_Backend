@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import viewsets
 from recommendation.services import recomm_svc
-from rest_framework import status
+from rest_framework import (status, pagination)
 from core.models import UserAction, Product
 import pandas as pd
 from product.serializers import (
@@ -62,7 +62,7 @@ class RecommendationViewSet(viewsets.ViewSet):
     def for_user(self, request):
         """Get recommendations for the authenticated user"""
         user = request.user
-        top_n = int(request.query_params.get('limit', 5))
+        top_n = int(request.query_params.get('limit', 20))
 
         recommended_products = recomm_svc.get_user_recomm(
             user_id=user.id,

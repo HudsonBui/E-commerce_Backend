@@ -65,7 +65,7 @@ class RecommendationService:
         except Exception as e:
             logger.error(f"Error loading recommendation models: {e}")
 
-    def get_user_recomm(self, user_id, top_n=5):
+    def get_user_recomm(self, user_id, top_n=20):
         """Get product recommendations for a user"""
         if not all([
                 self.model, self.user_encoder, self.product_encoder]):

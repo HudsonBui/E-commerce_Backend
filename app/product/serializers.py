@@ -36,7 +36,8 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class ProductVariantSerializer(serializers.ModelSerializer):
     """Serializer for product variant."""
-    product = serializers.PrimaryKeyRelatedField(read_only=True)
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), required=True)
+    id = serializers.IntegerField()
 
     class Meta:
         model = ProductVariant
@@ -47,7 +48,6 @@ class ProductVariantSerializer(serializers.ModelSerializer):
             'size',
             'stock_quantity',
         ]
-        read_only_fields = ('id',)
 
 
 class ProductDetailInformationSerializer(serializers.ModelSerializer):
@@ -84,7 +84,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
 class ProductDetailSerializer(serializers.ModelSerializer):
     """Serializer for product detail."""
     detail_variant = ProductVariantSerializer(required=True)
-    product = serializers.PrimaryKeyRelatedField(read_only=True)
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
 
     class Meta:
         model = ProductDetail
@@ -95,8 +95,6 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             'detail_variant',
             'sale_price',
         ]
-
-        read_only_fields = ('id',)
 
     def update(self, instance, validated_data):
         """Update product detail."""
@@ -116,9 +114,9 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 class ProductGenericSerializer(serializers.ModelSerializer):
 
     """Serializer for general product information."""
+    images = ProductImageSerializer(many=True)
     original_price = serializers.SerializerMethodField()
     sale_price = serializers.SerializerMethodField()
-    images = ProductImageSerializer(many=True)
 
     class Meta:
         model = Product
@@ -148,7 +146,6 @@ class ProductGenericSerializer(serializers.ModelSerializer):
         return obj.product_details.order_by('price').first().sale_price
 
 
-
 class ProductSerializer(serializers.ModelSerializer):
     """Serializer for product."""
     product_details = ProductDetailSerializer(many=True)
@@ -158,6 +155,7 @@ class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True)
     categories = CategorySerializer(many=True, read_only=True)
 
+    sale_price = serializers.SerializerMethodField()
     colors = serializers.SerializerMethodField()
     sizes = serializers.SerializerMethodField()
 
@@ -170,6 +168,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'average_rating',
             'review_count',
             'price',
+            'sale_price',
+            'product_details',
             'description',
             'material',
             'weight',
@@ -198,3 +198,10 @@ class ProductSerializer(serializers.ModelSerializer):
         sizes = [variant.size for variant in variants if variant.size]
 
         return sorted(set(sizes))
+
+    def get_sale_price(self, obj) -> float:
+        """Get sale price of the product."""
+        if not obj.product_details.exists():
+            return 0.0
+
+        return obj.product_details.order_by('price').first().sale_price

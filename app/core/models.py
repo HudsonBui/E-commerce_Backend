@@ -467,6 +467,7 @@ class CartItem(models.Model):
         on_delete=models.CASCADE,
         related_name="cart_items"
     )
+    is_checked = models.BooleanField(default=False)
     update_date = models.DateTimeField(auto_now=True)
     quantity = models.PositiveIntegerField(default=1)
 

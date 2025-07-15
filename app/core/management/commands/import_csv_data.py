@@ -11,9 +11,6 @@ from core.models import (
     ProductDetailInformation,
     ProductDetail
 )
-    ProductDetail
-)
-
 
 def get_or_create_category_hierarchy(breadcrumbs_list):
     parent = None

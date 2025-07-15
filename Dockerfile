@@ -1,10 +1,7 @@
-# FROM nvidia/cuda:12.9.0-cudnn-devel-ubuntu20.04
-# FROM python:3.11.11-slim-bookworm
-FROM tensorflow/tensorflow:latest-gpu
+FROM python:3.11.11-slim-bookworm
 LABEL maintainer="Hudson Bui"
 
 ENV PYTHONUNBUFFERED=1
-ENV LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
@@ -17,11 +14,7 @@ ARG DEV=false
 
 # Install system dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends\
-    python3 \
-    python3-pip \
-    python3-dev \
-    python3-venv \
+    apt-get install -y \
     postgresql-client \
     libjpeg-dev \
     zlib1g-dev \
@@ -32,7 +25,7 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 # Setup Python environment
-RUN python3 -m venv /py && \
+RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ $DEV = "true" ]; \

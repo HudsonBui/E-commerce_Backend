@@ -2,6 +2,23 @@ Collecting workspace information# E-commerce Backend
 
 A robust and scalable e-commerce REST API backend built with Django and Django REST Framework. This project provides comprehensive endpoints for managing users, products, categories, cart functionality, orders, and authentication.
 
+## Appearance
+- **API**
+
+<img src="appearance/Cart.png" alt="Cart API Screen" width="300" />
+<img src="appearance/Order.png" alt="Order API Screen" width="300" />
+<img src="appearance/Product.png" alt="Product API Screen" width="300" />
+<img src="appearance/Recommendation&User.png" alt="Recommendation & User API Screen" width="300" />
+<img src="appearance/Verification.png" alt="Verification API Screen" width="300" />
+...
+
+- **Admin site**
+
+<img src="appearance/Adminsite_main.png" alt="Admin site main" width="300" />
+<img src="appearance/Adminsite_product.png" alt="Admin site product" width="300" />
+<img src="appearance/Adminsite_product_add.png" alt="Admin site product add" width="300" />
+...
+
 ## Features
 
 - **User Management**
@@ -17,10 +34,13 @@ A robust and scalable e-commerce REST API backend built with Django and Django R
   - Image management
   - Pricing and stock control
 
-- **Order Processing**
-  - Shopping cart functionality
-  - Order placement and history
+- **Order & Cart Processing**
+  - Shopping cart management
+  - Order placement and detailed history
   - Order status tracking
+
+- **Recommendation Engine**
+- AI-based product recommendations for users.
 
 - **API Documentation**
   - Automatic OpenAPI schema generation
@@ -28,19 +48,39 @@ A robust and scalable e-commerce REST API backend built with Django and Django R
 
 ## Tech Stack
 
-- **Framework**: Django 4.2, Django REST Framework
+- **Framework**: Django, Django REST Framework
 - **Database**: PostgreSQL
-- **Authentication**: Token-based auth, Social auth (OAuth2)
-- **Documentation**: drf-spectacular (OpenAPI)
+- **Authentication**: DRF Token Authentication, Social Auth (OAuth2)
+- **AI/ML**: TensorFlow, Scikit-learn, Pandas
+- **Documentation**: drf-spectacular (OpenAPI 3)
 - **Containerization**: Docker, Docker Compose
-- **CI/CD**: GitHub Actions
+- **CI/CD**: GitHub Actions for automated checks
+
+## Project Structure
+
+```
+app/
+  ├── app/                # Main Django project settings and URLs
+  ├── cart/               # Shopping cart management
+  ├── core/               # Core models, custom commands, and utilities
+  ├── email_verification/ # Email verification system
+  ├── oauth/              # Social authentication (Google, Facebook)
+  ├── order/              # Order processing and history
+  ├── product/            # Product catalog, categories, and variants
+  ├── recommendation/     # AI-based product recommendation engine
+  ├── review/             # Product reviews and ratings
+  ├── user/               # User management and token authentication
+  └── watched_list/       # User's watched products list
+proxy/                    # Nginx proxy configuration
+scripts/                  # Helper scripts for running the application
+```
 
 ## Getting Started
 
 ### Prerequisites
 
 - Docker and Docker Compose
-- Git
+- Git LSF
 
 ### Environment Setup
 
@@ -56,6 +96,9 @@ A robust and scalable e-commerce REST API backend built with Django and Django R
    POSTGRES_USER=your_user
    POSTGRES_PASSWORD=your_password
    SECRET_DOCKER_SETTINGS_KEY=your_secret_key
+   DJANGO_ALLOWED_HOSTS=10.0.2.2,127.0.0.1
+   EMAIL_HOST_USER=<Your email>
+   EMAIL_HOST_PASSWORD=<Search: Google app password, Enter your email and paste it in ter> (it's supposed to include 16 characters)
 
    # Optional social auth credentials
    GOOGLE_OAUTH2_KEY=your_google_key
@@ -63,6 +106,38 @@ A robust and scalable e-commerce REST API backend built with Django and Django R
    FACEBOOK_KEY=your_facebook_key
    FACEBOOK_SECRET=your_facebook_secret
    ```
+  
+3. Add these variable to git (Setting/Secrets and variables/Action)
+
+<img src="appearance/secret.png" alt="Secrets and variable" width="300" />
+
+### Prepare data
+
+1. Run docker
+  ```bash
+  docker build .
+  ```
+  ```bash
+  docker compose build
+  ```
+
+2. Migrate database
+  ```bash
+  docker compose run --rm app sh -c "python manage.py makemigrations"
+  ```
+  ```bash
+  docker compose run --rm app sh -c "python manage.py migrate"
+  ```
+
+3. Import CSV data
+  ```bash
+  docker compose run --rm app sh -c "python manage.py import_csv_data /app/datasample/ClothingDataset.csv"
+  ```
+
+4. Create super user
+  ```bash
+  docker compose run --rm app sh -c "python manage.py createsuperuser"
+  ```
 
 ### Running the Application
 
@@ -73,6 +148,7 @@ A robust and scalable e-commerce REST API backend built with Django and Django R
 
 2. Access the API at http://127.0.0.1:8000/api/
 3. API Documentation is available at http://127.0.0.1:8000/api/docs/
+4. Admin site is available at http://127.0.0.1:8000/admin/
 
 
 
@@ -116,24 +192,10 @@ The application is containerized and ready for deployment to various platforms:
 - For production deployment, update the settings.py file to:
   - Set `DEBUG=False`
   - Configure proper email backend settings
-  - Add your domain to `ALLOWED_HOSTS`
+  - Add your domain to `DJANGO_ALLOWED_HOSTS`
   - Set up proper static and media file serving
 
-## Project Structure
 
-```
-app/
-  ├── app/ - Project settings and main URLs
-  ├── core/ - Core models and utilities
-  ├── user/ - User management and authentication
-  ├── email_verification/ - Email verification system
-  ├── oauth/ - Social authentication
-  ├── product/ - Product management and catalog
-```
-
-## License
-
-[Your License Here]
 
 ## Contributing
 
@@ -146,5 +208,3 @@ app/
 ---
 
 *Note: This README will be updated with more information as the project evolves.*
-
-Similar code found with 1 license type

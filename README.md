@@ -5,9 +5,9 @@ A robust and scalable e-commerce REST API backend built with Django and Django R
 ## Appearance
 - **API**
 
-<img src="appearance/Cart.png" alt="Cart API Screen" width="300" />
-<img src="appearance/Order.png" alt="Order API Screen" width="300" />
-<img src="appearance/Product.png" alt="Product API Screen" width="300" />
+<img src="appearance/Cart.png" alt="Cart API Screen" width="150" />
+<img src="appearance/Order.png" alt="Order API Screen" width="150" />
+<img src="appearance/Product.png" alt="Product API Screen" width="150" />
 <img src="appearance/Recommendation&User.png" alt="Recommendation & User API Screen" width="300" />
 <img src="appearance/Verification.png" alt="Verification API Screen" width="300" />
 ...

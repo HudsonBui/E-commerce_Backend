@@ -40,7 +40,7 @@ A robust and scalable e-commerce REST API backend built with Django and Django R
   - Order status tracking
 
 - **Recommendation Engine**
-- AI-based product recommendations for users.
+  - Deep-learning model (Neural Collaborative Filtering) recommendations products for users.
 
 - **API Documentation**
   - Automatic OpenAPI schema generation
@@ -195,6 +195,11 @@ The application is containerized and ready for deployment to various platforms:
   - Add your domain to `DJANGO_ALLOWED_HOSTS`
   - Set up proper static and media file serving
 
+## Come along app
+You can download this repo to implement the UI for this repo
+  ```bash
+  git clone https://github.com/heluDuyne/E-Commerce_FrontEnd.git
+  ```
 
 
 ## Contributing
